@@ -13,13 +13,11 @@ public class Cache {
     public static int nBitsOffset;
     public static int nBitsIndice;
 
-    public Cache() {
-    }
+    public Cache() {}
 
     public static void simulaCache(Bloco[][] cache, int assoc, String subs, List<Integer> enderecos) {
         Random random = new Random();
 
-        // Converter a string de substituição para enumeração
         Substituicao politicaSubstituicao = Substituicao.getSubstituicao(subs);
 
         for (int endereco : enderecos) {
@@ -50,8 +48,8 @@ public class Cache {
                     cache[indice][posicaoLivre].setBitValidade(true);
                     cache[indice][posicaoLivre].setTag(tag);
                     missCompulsorio++;
-                } else if (isFull(cache[indice])) {
-                    // Se o conjunto está cheio, aplicar política de substituição
+                } else {
+                    // Miss de conflito ou de capacidade
                     if (politicaSubstituicao == Substituicao.RANDOM) {
                         int posicaoSubstituir = random.nextInt(assoc);
                         cache[indice][posicaoSubstituir].setTag(tag);
@@ -66,20 +64,31 @@ public class Cache {
 
     public String montaResultado(int flagSaida) {
         String resultado = "";
-        double taxaMiss = (double) totalMisses / totalAcessos;
-        double taxaHit = (double) totalHits / totalAcessos;
+        double taxaMiss = (double) totalMisses / totalAcessos; // Converter para porcentagem
+        double taxaHit = (double) totalHits / totalAcessos;   // Converter para porcentagem
+        double taxaMissCompulsorio = (double) missCompulsorio / totalMisses; // Miss compulsório
+        double taxaMissConflito = (double) missConflito / totalMisses; // Miss de conflito
+        double taxaMissCapacidade = (double) missCapacidade / totalMisses; // Miss de capacidade
 
         if (flagSaida == 0) {
             resultado = "Total de acessos: " + totalAcessos + "\n" +
                     "Total de hits: " + totalHits + "\n" +
-                    "Taxa de hits: " + String.format("%.2f", taxaHit) + "\n" +
+                    "Taxa de hits: " + String.format("%.2f", taxaHit) + " %\n" +  // Porcentagem
                     "Total de misses: " + totalMisses + "\n" +
-                    "Taxa de misses: " + String.format("%.2f", taxaMiss) + "\n" +
+                    "Taxa de misses: " + String.format("%.2f", taxaMiss) + " %\n" + // Porcentagem
                     "Misses compulsórios: " + missCompulsorio + "\n" +
+                    "Taxa de miss compulsório: " + String.format("%.2f", taxaMissCompulsorio) + " %\n" +
                     "Misses de conflito: " + missConflito + "\n" +
-                    "Misses de capacidade: " + missCapacidade + "\n";
+                    "Taxa de miss de conflito: " + String.format("%.2f", taxaMissConflito) + " %\n" +
+                    "Misses de capacidade: " + missCapacidade + "\n" +
+                    "Taxa de miss de capacidade: " + String.format("%.2f", taxaMissCapacidade) + " %\n";
         } else if (flagSaida == 1) {
-            resultado = totalAcessos + "," + taxaHit + "," + taxaMiss + "," + missCompulsorio + "," + missConflito + "," + missCapacidade;
+            resultado = totalAcessos + " " +
+                    String.format("%.2f", taxaHit) + " " +
+                    String.format("%.2f", taxaMiss) + " " +
+                    String.format("%.2f",taxaMissCompulsorio) + " " +
+                    String.format("%.2f",taxaMissConflito) + " " +
+                    String.format("%.2f",taxaMissCapacidade);
         }
 
         return resultado;
