@@ -5,31 +5,14 @@ public enum Substituicao {
 
     public static Substituicao getSubstituicao(String substituicao) {
         switch (substituicao) {
-            case "LRU":
+            case "L":
                 return LRU;
-            case "FIFO":
+            case "F":
                 return FIFO;
-            case "RANDOM":
+            case "R":
                 return RANDOM;
             default:
                 return null;
         }
-    }
-
-    public String getDescricao() {
-        switch (this) {
-            case LRU:
-                return "LRU";
-            case FIFO:
-                return "FIFO";
-            case RANDOM:
-                return "RANDOM";
-            default:
-                return null;
-        }
-    }
-
-    public static String[] getSubstituicoes() {
-        return new String[] {"LRU", "FIFO", "RANDOM"};
     }
 }

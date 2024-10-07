@@ -1,35 +1,17 @@
-package simulador.cache;
-
-public enum Associatividade {
-    DIRETA, CONJUNTO, TOTAL;
-
-    public String getDescricao() {
-        switch (this) {
-            case DIRETA:
-                return "DIRETA";
-            case CONJUNTO:
-                return "CONJUNTO";
-            case TOTAL:
-                return "TOTAL";
-            default:
-                return null;
-        }
-    }
-
-    public static Associatividade getAssociatividade(int associatividade) {
-        switch (associatividade) {
-            case 1:
-                return DIRETA;
-            case 2:
-                return CONJUNTO;
-            case 3:
-                return TOTAL;
-            default:
-                return null;
-        }
-    }
-
-    public static String[] getAssociatividades() {
-        return new String[] {"DIRETA", "CONJUNTO", "TOTAL"};
-    }
-}
+//package simulador.cache;
+//
+//public enum Associatividade {
+//    DIRETA, CONJUNTO, TOTAL;
+//
+//    public static Associatividade getAssociatividade(Cache cache) {
+//        int numeroConjuntos = cache.getConjuntos().length;
+//        int numeroBloco = cache.getConjuntos()[0].getBlocos().length;
+//        if (numeroConjuntos == 1) {
+//            return DIRETA;
+//        } else if (numeroConjuntos == numeroBloco) {
+//            return CONJUNTO;
+//        } else {
+//            return TOTAL;
+//        }
+//    }
+//}

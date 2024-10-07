@@ -1,16 +1,16 @@
 package simulador.cache;
 
 public enum Miss {
-    COMPULSORY, CAPACITY, CONFLICT;
+    COMPULSORIO, CAPACIDADE, CONFLITO;
 
     public static Miss getMiss(String miss) {
         switch (miss) {
-            case "COMPULSORY":
-                return COMPULSORY;
-            case "CAPACITY":
-                return CAPACITY;
-            case "CONFLICT":
-                return CONFLICT;
+            case "COMPULSORIO":
+                return COMPULSORIO;
+            case "CAPACIDADE":
+                return CAPACIDADE;
+            case "CONFLITO":
+                return CONFLITO;
             default:
                 return null;
         }
@@ -18,18 +18,18 @@ public enum Miss {
 
     public String getDescricao() {
         switch (this) {
-            case COMPULSORY:
-                return "COMPULSORY";
-            case CAPACITY:
-                return "CAPACITY";
-            case CONFLICT:
-                return "CONFLICT";
+            case COMPULSORIO:
+                return "COMPULSORIO";
+            case CAPACIDADE:
+                return "CAPACIDADE";
+            case CONFLITO:
+                return "CONFLITO";
             default:
                 return null;
         }
     }
 
     public static String[] getMisses() {
-        return new String[] {"COMPULSORY", "CAPACITY", "CONFLICT"};
+        return new String[] {"COMPULSORIO", "CAPACIDADE", "CONFLITO"};
     }
 }

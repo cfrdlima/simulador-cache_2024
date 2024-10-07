@@ -2,16 +2,16 @@ package simulador.cache;
 
 public class Bloco {
     private boolean bitValidade;
-    private String tag;
+    private int tag;
 
-    public Bloco(String tag, boolean bitValidade) {
+    public Bloco(int tag, boolean bitValidade) {
         this.tag = tag;
         this.bitValidade = bitValidade;
     }
 
     public Bloco() {
         this.bitValidade = false;
-        this.tag = "";
+        this.tag = 0;
     }
 
     public boolean isBitValidade() {
@@ -22,11 +22,11 @@ public class Bloco {
         this.bitValidade = bitValidade;
     }
 
-    public String getTag() {
+    public int getTag() {
         return tag;
     }
 
-    public void setTag(String tag) {
+    public void setTag(int tag) {
         this.tag = tag;
     }
 }
