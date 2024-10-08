@@ -10,7 +10,7 @@ public class Main {
         int bsize = 4;
         int assoc = 1;
         String tipoSubstituicao = "R";
-        int flagSaida = 1;
+        int flagSaida = 0;
 
         Cache cacheObj = new Cache();
 
@@ -18,6 +18,10 @@ public class Main {
 
         Cache.nBitsOffset = (int) (Math.log(bsize) / Math.log(2)); // Calcular bits de offset
         Cache.nBitsIndice = (int) (Math.log(nsets) / Math.log(2));     // Calcular bits de índice
+
+        Cache.nSets = nsets;
+        Cache.bSize = bsize;
+        Cache.assoc = assoc;
 
         List<Integer> listaEnderecos = Arrays.asList(
                 20, 2, 22, 4, 22, 10, 5, 5, 4, 1,
@@ -32,7 +36,7 @@ public class Main {
                 4, 1, 23, 1, 31, 29, 0, 28, 15, 29
         );
 
-        cacheObj.simulaCache(cache, assoc, tipoSubstituicao, listaEnderecos);
+        Cache.simulaCache(cache, assoc, tipoSubstituicao, listaEnderecos);
 
         String resultado = cacheObj.montaResultado(flagSaida);
         System.out.println(resultado);
