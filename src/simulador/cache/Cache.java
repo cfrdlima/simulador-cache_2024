@@ -1,7 +1,17 @@
 package simulador.cache;
 
+import com.sun.tools.javac.Main;
+
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Cache {
     private static int totalMisses = 0;
@@ -15,6 +25,7 @@ public class Cache {
     public static int nSets;
     public static int bSize;
     public static int assoc;
+    public static int nBitsTag;
 
     public Cache() {}
 
@@ -24,7 +35,7 @@ public class Cache {
 
         for (int endereco : enderecos) {
             totalAcessos++;
-            int tag = endereco >> (nBitsOffset + nBitsIndice);
+//            int tag = endereco >> (nBitsOffset + nBitsIndice);
             int indice = (endereco >> nBitsOffset) & (cache.length - 1);  // Cálculo do índice
 
             boolean hit = false;
@@ -32,7 +43,7 @@ public class Cache {
 
             // Percorrer os blocos do conjunto
             for (int i = 0; i < assoc; i++) {
-                if (cache[indice][i].isBitValidade() && cache[indice][i].getTag() == tag) {
+                if (cache[indice][i].isBitValidade() && cache[indice][i].getTag() == nBitsTag) {
                     // Hit encontrado
                     hit = true;
                     totalHits++;
@@ -46,20 +57,16 @@ public class Cache {
             if (!hit) {
                 totalMisses++;
                 if (posicaoLivre != -1) {
-                    // Miss compulsório
                     cache[indice][posicaoLivre].setBitValidade(true);
-                    cache[indice][posicaoLivre].setTag(tag);
+                    cache[indice][posicaoLivre].setTag(nBitsTag);
                     missCompulsorio++;
                 } else {
-                    // Verifica se o conjunto está cheio
                     if (isFull(cache[indice])) {
-                        // Miss de capacidade
                         missCapacidade++;
                     } else {
-                        // Miss de conflito
                         if (politicaSubstituicao == Substituicao.RANDOM) {
                             int posicaoSubstituir = random.nextInt(assoc);
-                            cache[indice][posicaoSubstituir].setTag(tag);
+                            cache[indice][posicaoSubstituir].setTag(nBitsTag);
                             missConflito++;
                         }
                     }
@@ -121,5 +128,23 @@ public class Cache {
             }
         }
         return true;
+    }
+
+    public List<Integer> lerEnderecosBinario(String caminhoArquivo) {
+        List<Integer> enderecos = new ArrayList<>();
+
+        try (FileInputStream fis = new FileInputStream(caminhoArquivo)) {
+            byte[] buffer = new byte[4]; // 4 bytes para um inteiro (32 bits)
+
+            while (fis.read(buffer) != -1) {
+                // Converte os 4 bytes para um inteiro (big-endian)
+                int endereco = ByteBuffer.wrap(buffer).getInt();
+                enderecos.add(endereco);
+            }
+        } catch (IOException e) {
+            e.printStackTrace(); // Tratar exceção
+        }
+
+        return enderecos;
     }
 }

@@ -1,14 +1,10 @@
 package simulador.cache;
 
 public enum Substituicao {
-    LRU, FIFO, RANDOM;
+    RANDOM; //    LRU, FIFO;
 
     public static Substituicao getSubstituicao(String substituicao) {
         switch (substituicao) {
-            case "L":
-                return LRU;
-            case "F":
-                return FIFO;
             case "R":
                 return RANDOM;
             default:
