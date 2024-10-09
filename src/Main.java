@@ -6,13 +6,13 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) {
 
-        int nsets = 16;
-        int bsize = 2;
-        int assoc = 8;
-        String tipoSubstituicao;
+        int nsets = 256;
+        int bsize = 4;
+        int assoc = 1;
+        String tipoSubstituicao = "R";
         int flagSaida = 1;
 
-        String caminhoArquivo = "src/simulador/enderecos/bin_1000.bin";
+        String caminhoArquivo = "src/simulador/enderecos/bin_100.bin";
 
         Cache cacheObj = new Cache();
 
@@ -28,33 +28,9 @@ public class Main {
 
         List<Integer> listaEnderecos = cacheObj.lerEnderecosBinario(caminhoArquivo);
 
-        //Testando RANDOM
-        tipoSubstituicao = "R";
         Cache.simulaCache(cache, assoc, tipoSubstituicao, listaEnderecos);
-        String resultadoRANDOM = cacheObj.montaResultado(flagSaida);
-        System.out.println("\nResultados para RANDOM:");
-        System.out.println(resultadoRANDOM);
 
-        Cache.resetEstatisticas();
-
-        // Testando LRU
-        tipoSubstituicao = "L";
-        Cache.simulaCache(cache, assoc, tipoSubstituicao, listaEnderecos);
-        String resultadoLRU = cacheObj.montaResultado(flagSaida);
-        System.out.println("Resultados para LRU:");
-        System.out.println(resultadoLRU);
-
-        // Reinicia as estatísticas da cache para o próximo teste
-        Cache.resetEstatisticas();
-
-        // Testando FIFO
-        tipoSubstituicao = "F"; 
-        Cache.simulaCache(cache, assoc, tipoSubstituicao, listaEnderecos);
-        String resultadoFIFO = cacheObj.montaResultado(flagSaida);
-        System.out.println("Resultados para FIFO:");
-        System.out.println(resultadoFIFO);
-
-        // Reinicie as estatísticas da cache para o próximo teste
-        Cache.resetEstatisticas();
+        String resultado = cacheObj.montaResultado(flagSaida);
+        System.out.println(resultado);
     }
 }
