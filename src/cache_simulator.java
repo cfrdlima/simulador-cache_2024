@@ -1,10 +1,11 @@
 import simulador.cache.Cache;
 import simulador.cache.Bloco;
 
+import java.io.IOException;
 import java.util.List;
 
 public class cache_simulator {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         if (args.length != 6){
             System.out.println("Numero de argumentos incorreto. Utilize:");

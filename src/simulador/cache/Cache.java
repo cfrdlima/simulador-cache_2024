@@ -30,7 +30,8 @@ public class Cache {
 
         for (int endereco : enderecos) {
             totalAcessos++;
-            int indice = (endereco >> nBitsOffset) & (cache.length - 1);  // Cálculo do índice
+            int indice = (endereco >> nBitsOffset) & (nSets - 1);  // Mascarar os bits do índice corretamente
+            int nBitsTag = endereco >> (nBitsOffset + nBitsIndice);  // Calcular os bits da tag
 
             boolean hit = false;
             int posicaoLivre = -1;  // Para verificar espaço vazio
@@ -58,16 +59,18 @@ public class Cache {
                     if (isFull(cache[indice])) {
                         missCapacidade++;
                     } else {
+                        missConflito++;
                         if (politicaSubstituicao == Substituicao.RANDOM) {
                             int posicaoSubstituir = random.nextInt(assoc);
                             cache[indice][posicaoSubstituir].setTag(nBitsTag);
-                            missConflito++;
                         }
+                        // FIFO e LRU não implementados, mas podem ser inseridos aqui
                     }
                 }
             }
         }
     }
+
 
     public String montaResultado(int flagSaida) {
         String resultado = "";
@@ -125,7 +128,7 @@ public class Cache {
         return true;
     }
 
-    public List<Integer> lerEnderecosBinario(String caminhoArquivo) {
+    public List<Integer> lerEnderecosBinario(String caminhoArquivo) throws IOException {
         List<Integer> enderecos = new ArrayList<>();
 
         try (FileInputStream fis = new FileInputStream(caminhoArquivo)) {
@@ -137,7 +140,11 @@ public class Cache {
                 enderecos.add(endereco);
             }
         } catch (IOException e) {
-            e.printStackTrace(); // Tratar exceção
+            e.printStackTrace();
+        }
+
+        if (enderecos.isEmpty()) {
+            throw new IOException("O arquivo de entrada está vazio ou não foi lido corretamente.");
         }
 
         return enderecos;
