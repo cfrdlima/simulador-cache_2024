@@ -1,7 +1,9 @@
 **Passo a passo execuçao do simulador da cache:**
 
 > Necessário JDK 17
+
 > Para rodar o simulador é necessário entrar na pasta raiz do projeto onde se encontra o executável do projeto.
+ 
 > Para compilar o projeto é só executar o comando: **javac cache_simulator.java**
 
 > Todos os arquivos necessarios ja se en contram no projeto na pasta simulador-cache_2024/src/simulador/enderecos. 
