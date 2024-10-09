@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 public class Cache {
@@ -68,41 +69,42 @@ public class Cache {
         }
     }
 
-
     public String montaResultado(int flagSaida) {
         String resultado = "";
-        double taxaMiss = (double) totalMisses / totalAcessos; // Converter para porcentagem
-        double taxaHit = (double) totalHits / totalAcessos;   // Converter para porcentagem
-        double taxaMissCompulsorio = (double) missCompulsorio / totalMisses; // Miss compulsório
-        double taxaMissConflito = (double) missConflito / totalMisses; // Miss de conflito
-        double taxaMissCapacidade = (double) missCapacidade / totalMisses; // Miss de capacidade
-        int tamanhoTotalCache = (nSets * bSize * assoc);
+
+        // Configura a localidade para garantir o uso de ponto decimal
+        Locale.setDefault(Locale.US);
+
+        double taxaMiss = (double) totalMisses / totalAcessos;
+        double taxaHit = (double) totalHits / totalAcessos;
+        double taxaMissCompulsorio = (totalMisses > 0) ? (double) missCompulsorio / totalMisses : 0;
+        double taxaMissConflito = (totalMisses > 0) ? (double) missConflito / totalMisses : 0;
+        double taxaMissCapacidade = (totalMisses > 0) ? (double) missCapacidade / totalMisses : 0;
 
         if (flagSaida == 0) {
-            resultado =
-                    "Tamanho total da cache: " + tamanhoTotalCache + "\n" +
-                            "Total de acessos: " + totalAcessos + "\n" +
-                            "Total de hits: " + totalHits + "\n" +
-                            "Taxa de hits: " + String.format("%.0f", taxaHit * 100) + "%\n" +  // Converter para porcentagem
-                            "Total de misses: " + totalMisses + "\n" +
-                            "Taxa de misses: " + String.format("%.0f", taxaMiss * 100) + "%\n" + // Converter para porcentagem
-                            "Misses compulsórios: " + missCompulsorio + "\n" +
-                            "Taxa de miss compulsório: " + String.format("%.0f", taxaMissCompulsorio * 100) + "%\n" + // Converter para porcentagem
-                            "Misses de conflito: " + missConflito + "\n" +
-                            "Taxa de miss de conflito: " + String.format("%.0f", taxaMissConflito * 100) + "%\n" + // Converter para porcentagem
-                            "Misses de capacidade: " + missCapacidade + "\n" +
-                            "Taxa de miss de capacidade: " + String.format("%.0f", taxaMissCapacidade * 100) + "%\n"; // Converter para porcentagem
+            resultado = "Total de acessos: " + totalAcessos + "\n" +
+                    "Total de hits: " + totalHits + "\n" +
+                    "Taxa de hits: " + String.format("%.2f", taxaHit) + "\n" +
+                    "Total de misses: " + totalMisses + "\n" +
+                    "Taxa de misses: " + String.format("%.2f", taxaMiss) + "\n" +
+                    "Misses compulsórios: " + missCompulsorio + "\n" +
+                    "Taxa de miss compulsório: " + String.format("%.2f", taxaMissCompulsorio) + "\n" +
+                    "Misses de conflito: " + missConflito + "\n" +
+                    "Taxa de miss de conflito: " + String.format("%.2f", taxaMissConflito) + "\n" +
+                    "Misses de capacidade: " + missCapacidade + "\n" +
+                    "Taxa de miss de capacidade: " + String.format("%.2f", taxaMissCapacidade) + "\n";
         } else if (flagSaida == 1) {
             resultado = totalAcessos + " " +
                     String.format("%.2f", taxaHit) + " " +
                     String.format("%.2f", taxaMiss) + " " +
-                    String.format("%.2f",taxaMissCompulsorio) + " " +
-                    String.format("%.2f",taxaMissConflito) + " " +
-                    String.format("%.2f",taxaMissCapacidade);
+                    String.format("%.2f", taxaMissCompulsorio) + " " +
+                    String.format("%.2f", taxaMissConflito) + " " +
+                    String.format("%.2f", taxaMissCapacidade);
         }
 
         return resultado;
     }
+
 
     public Bloco[][] inicializarCache(int nsets, int assoc) {
         Bloco[][] cache = new Bloco[nsets][assoc];
