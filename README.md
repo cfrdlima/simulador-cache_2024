@@ -2,8 +2,10 @@
 
 Necessário JDK 17
 Para rodar o simulador é necessário entrar na pasta raiz do projeto onde se encontra o executável do projeto.
-Todos os arquivos necessarios ja se en contram no projeto na pasta simulador-cache_2024/src/simulador/enderecos.
-Apenas a política de substituição "RANDOM" foi implementada, qualquer outra opção diferente ocorrerá erro.
+ 
+ Todos os arquivos necessarios ja se en contram no projeto na pasta simulador-cache_2024/src/simulador/enderecos. 
+
+ Apenas a política de substituição "RANDOM" foi implementada, qualquer outra opção diferente ocorrerá erro.
 
 **Comando para executar:**
 
