@@ -30,14 +30,17 @@ public class Cache {
 
         for (int endereco : enderecos) {
             totalAcessos++;
+            
+            // Calcular tag e índice
             int indice = (endereco >> nBitsOffset) & (cache.length - 1);  // Cálculo do índice
-
+            int tag = endereco >> (nBitsOffset + nBitsIndice);  // Cálculo do tag
+        
             boolean hit = false;
             int posicaoLivre = -1;  // Para verificar espaço vazio
-
+        
             // Percorrer os blocos do conjunto
             for (int i = 0; i < assoc; i++) {
-                if (cache[indice][i].isBitValidade() && cache[indice][i].getTag() == nBitsTag) {
+                if (cache[indice][i].isBitValidade() && cache[indice][i].getTag() == tag) {
                     // Hit encontrado
                     hit = true;
                     totalHits++;
@@ -47,26 +50,29 @@ public class Cache {
                     posicaoLivre = i;  // Encontrar a primeira posição livre
                 }
             }
-
+        
             if (!hit) {
                 totalMisses++;
                 if (posicaoLivre != -1) {
                     cache[indice][posicaoLivre].setBitValidade(true);
-                    cache[indice][posicaoLivre].setTag(nBitsTag);
+                    cache[indice][posicaoLivre].setTag(tag);
                     missCompulsorio++;
                 } else {
                     if (isFull(cache[indice])) {
                         missCapacidade++;
-                    } else {
                         if (politicaSubstituicao == Substituicao.RANDOM) {
+                            // Substituição aleatória
                             int posicaoSubstituir = random.nextInt(assoc);
-                            cache[indice][posicaoSubstituir].setTag(nBitsTag);
+                            cache[indice][posicaoSubstituir].setTag(tag);
                             missConflito++;
                         }
+                    } else {
+                        missConflito++;
                     }
                 }
             }
         }
+        
     }
 
     public String montaResultado(int flagSaida) {
