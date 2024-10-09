@@ -75,6 +75,7 @@ public class Cache {
         
     }
 
+
     public String montaResultado(int flagSaida) {
         String resultado = "";
 
@@ -131,7 +132,7 @@ public class Cache {
         return true;
     }
 
-    public List<Integer> lerEnderecosBinario(String caminhoArquivo) {
+    public List<Integer> lerEnderecosBinario(String caminhoArquivo) throws IOException {
         List<Integer> enderecos = new ArrayList<>();
 
         try (FileInputStream fis = new FileInputStream(caminhoArquivo)) {
@@ -143,7 +144,11 @@ public class Cache {
                 enderecos.add(endereco);
             }
         } catch (IOException e) {
-            e.printStackTrace(); // Tratar exceção
+            e.printStackTrace();
+        }
+
+        if (enderecos.isEmpty()) {
+            throw new IOException("O arquivo de entrada está vazio ou não foi lido corretamente.");
         }
 
         return enderecos;
