@@ -4,11 +4,6 @@ public class Bloco {
     private boolean bitValidade;
     private int tag;
 
-    public Bloco(int tag, boolean bitValidade) {
-        this.tag = tag;
-        this.bitValidade = bitValidade;
-    }
-
     public Bloco() {
         this.bitValidade = false;
         this.tag = 0;

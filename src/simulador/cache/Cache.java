@@ -1,17 +1,11 @@
 package simulador.cache;
 
-import com.sun.tools.javac.Main;
-
-import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Cache {
     private static int totalMisses = 0;
@@ -27,8 +21,7 @@ public class Cache {
     public static int assoc;
     public static int nBitsTag;
 
-    public Cache() {
-    }
+    public Cache() {}
 
     public static void simulaCache(Bloco[][] cache, int assoc, String subs, List<Integer> enderecos) {
         Random random = new Random();
@@ -36,15 +29,14 @@ public class Cache {
 
         for (int endereco : enderecos) {
             totalAcessos++;
-            int tag = endereco >> (nBitsOffset + nBitsIndice); // Calcule a tag corretamente
-            int indice = (endereco >> nBitsOffset) & (cache.length - 1); // Cálculo do índice
+            int indice = (endereco >> nBitsOffset) & (cache.length - 1);  // Cálculo do índice
 
             boolean hit = false;
             int posicaoLivre = -1;  // Para verificar espaço vazio
 
             // Percorrer os blocos do conjunto
             for (int i = 0; i < assoc; i++) {
-                if (cache[indice][i].isBitValidade() && cache[indice][i].getTag() == tag) {
+                if (cache[indice][i].isBitValidade() && cache[indice][i].getTag() == nBitsTag) {
                     // Hit encontrado
                     hit = true;
                     totalHits++;
@@ -58,24 +50,24 @@ public class Cache {
             if (!hit) {
                 totalMisses++;
                 if (posicaoLivre != -1) {
-                    // Miss compulsório
                     cache[indice][posicaoLivre].setBitValidade(true);
-                    cache[indice][posicaoLivre].setTag(tag);
+                    cache[indice][posicaoLivre].setTag(nBitsTag);
                     missCompulsorio++;
                 } else {
-                    // Miss de conflito
-                    if (politicaSubstituicao == Substituicao.RANDOM) {
-                        int posicaoSubstituir = random.nextInt(assoc);
-                        cache[indice][posicaoSubstituir].setTag(tag);
-                        missConflito++;
-                    } else {
-                        // Lógica para LRU ou FIFO se implementado
+                    if (isFull(cache[indice])) {
                         missCapacidade++;
+                    } else {
+                        if (politicaSubstituicao == Substituicao.RANDOM) {
+                            int posicaoSubstituir = random.nextInt(assoc);
+                            cache[indice][posicaoSubstituir].setTag(nBitsTag);
+                            missConflito++;
+                        }
                     }
                 }
             }
         }
     }
+
 
     public String montaResultado(int flagSaida) {
         String resultado = "";
