@@ -1,17 +1,11 @@
 package simulador.cache;
 
-import com.sun.tools.javac.Main;
-
-import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Cache {
     private static int totalMisses = 0;
@@ -29,46 +23,91 @@ public class Cache {
 
     public Cache() {}
 
+    public static void resetEstatisticas() {
+        totalMisses = 0;
+        missCompulsorio = 0;
+        missConflito = 0;
+        missCapacidade = 0;
+        totalHits = 0;
+        totalAcessos = 0;
+    }
+
     public static void simulaCache(Bloco[][] cache, int assoc, String subs, List<Integer> enderecos) {
         Random random = new Random();
         Substituicao politicaSubstituicao = Substituicao.getSubstituicao(subs);
-
+        List<Integer> PS_LRU[] = new List[nSets];  // Listas para guardar a ordem de uso para LRU
+        List<Integer> PS_FIFO[] = new List[nSets]; // Listas para guardar a ordem de chegada para FIFO
+    
+        for (int i = 0; i < nSets; i++) {
+            PS_LRU[i] = new ArrayList<>();
+            PS_FIFO[i] = new ArrayList<>();
+        }
+    
         for (int endereco : enderecos) {
             totalAcessos++;
-//            int tag = endereco >> (nBitsOffset + nBitsIndice);
+            int tag = endereco >> (nBitsOffset + nBitsIndice);
             int indice = (endereco >> nBitsOffset) & (cache.length - 1);  // Cálculo do índice
-
+    
             boolean hit = false;
             int posicaoLivre = -1;  // Para verificar espaço vazio
-
+    
             // Percorrer os blocos do conjunto
             for (int i = 0; i < assoc; i++) {
-                if (cache[indice][i].isBitValidade() && cache[indice][i].getTag() == nBitsTag) {
+                if (cache[indice][i].isBitValidade() && cache[indice][i].getTag() == tag) {
                     // Hit encontrado
                     hit = true;
                     totalHits++;
+    
+                    // Atualizar LRU
+                    if (politicaSubstituicao == Substituicao.LRU) {
+                        PS_LRU[indice].remove((Integer) i);  // Remover a posição do bloco usado
+                        PS_LRU[indice].add(i);  // Reposicionar no final (recente)
+                    }
                     break;
                 }
                 if (!cache[indice][i].isBitValidade() && posicaoLivre == -1) {
                     posicaoLivre = i;  // Encontrar a primeira posição livre
                 }
             }
-
+    
             if (!hit) {
                 totalMisses++;
                 if (posicaoLivre != -1) {
+                    // Miss compulsório
                     cache[indice][posicaoLivre].setBitValidade(true);
-                    cache[indice][posicaoLivre].setTag(nBitsTag);
+                    cache[indice][posicaoLivre].setTag(tag);
                     missCompulsorio++;
+    
+                    // Atualizar LRU e FIFO
+                    if (politicaSubstituicao == Substituicao.LRU) {
+                        PS_LRU[indice].add(posicaoLivre);  // Adicionar o bloco usado recentemente
+                    } else if (politicaSubstituicao == Substituicao.FIFO) {
+                        PS_FIFO[indice].add(posicaoLivre);  // Adicionar o bloco no final da fila
+                    }
                 } else {
-                    if (isFull(cache[indice])) {
-                        missCapacidade++;
-                    } else {
-                        if (politicaSubstituicao == Substituicao.RANDOM) {
-                            int posicaoSubstituir = random.nextInt(assoc);
-                            cache[indice][posicaoSubstituir].setTag(nBitsTag);
-                            missConflito++;
-                        }
+                    // Se o conjunto está cheio
+                    missConflito++;
+    
+                    int posicaoSubstituir = -1;
+    
+                    if (politicaSubstituicao == Substituicao.RANDOM) {
+                        posicaoSubstituir = random.nextInt(assoc);
+                    } else if (politicaSubstituicao == Substituicao.LRU) {
+                        // Substituir o bloco menos recentemente usado (primeiro da lista)
+                        posicaoSubstituir = PS_LRU[indice].remove(0);
+                    } else if (politicaSubstituicao == Substituicao.FIFO) {
+                        // Substituir o bloco mais antigo (primeiro da fila FIFO)
+                        posicaoSubstituir = PS_FIFO[indice].remove(0);
+                    }
+    
+                    // Realizar a substituição
+                    cache[indice][posicaoSubstituir].setTag(tag);
+    
+                    // Atualizar as listas de LRU e FIFO após a substituição
+                    if (politicaSubstituicao == Substituicao.LRU) {
+                        PS_LRU[indice].add(posicaoSubstituir);  // Adicionar a nova posição usada
+                    } else if (politicaSubstituicao == Substituicao.FIFO) {
+                        PS_FIFO[indice].add(posicaoSubstituir);  // Adicionar ao final da fila
                     }
                 }
             }
