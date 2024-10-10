@@ -26,7 +26,7 @@ public class Cache {
 
     /*  Ele percorre cada endereço, calcula a tag e o índice, e verifica se o bloco correspondente já está na cache.
     Se não estiver, ele determina se o miss é compulsório, conflito, ou capacidade, com base no estado atual da cache. */
-    public static void simulaCache(Bloco[][] cache, int assoc, String subs, List<Integer> enderecos) {
+    public static void simulaCache(Bloco[][] cache, int assoc, String subs, List<Integer> enderecos) throws IOException {
         Random random = new Random();
         Substituicao politicaSubstituicao = Substituicao.getSubstituicao(subs);
 
@@ -69,6 +69,8 @@ public class Cache {
                             int posicaoSubstituir = random.nextInt(assoc);
                             cache[indice][posicaoSubstituir].setTag(tag);
                             missConflito++;
+                        }else{
+                            throw new IOException("Politica de substituição não implementada.");
                         }
                     } else {
                         missConflito++;

@@ -5,48 +5,66 @@ import java.io.IOException;
 import java.util.List;
 
 public class cache_simulator {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
-        // Verificar se o número de argumentos está correto
-        if (args.length != 6){
+        if (args.length != 6) {
             System.out.println("Numero de argumentos incorreto. Utilize:");
             System.out.println("java cache_simulator <nsets> <bsize> <assoc> <substituição> <flag_saida> arquivo_de_entrada");
             System.exit(1);
         }
 
-        // Ler argumentos
-        int nsets = Integer.parseInt(args[0]);
-        int bsize = Integer.parseInt(args[1]);
-        int assoc = Integer.parseInt(args[2]);
-        String subst = args[3];
-        int flagOut = Integer.parseInt(args[4]);
-        String arquivoEntrada = args[5];
+        try {
+            // Tenta converter os argumentos para inteiros
+            int nsets = Integer.parseInt(args[0]);
+            int bsize = Integer.parseInt(args[1]);
+            int assoc = Integer.parseInt(args[2]);
+            int flagOut = Integer.parseInt(args[4]);
 
-        String caminhoArquivo = "./simulador/enderecos/" + arquivoEntrada;
+            // Verifica se a política de substituição é válida
+            String subst = args[3];
+            if (!subst.equals("R")) {
+                throw new IllegalArgumentException("Política de substituição inválida. Use 'R' para Random.");
+            }
 
-        Cache cacheObj = new Cache();
+            // Verifica o arquivo de entrada
+            String arquivoEntrada = args[5];
 
-        // Verificar se o número de conjuntos é uma potência de 2
-        Cache.nBitsOffset = (int) (Math.log(bsize) / Math.log(2)); // Calcular bits de offset
-        Cache.nBitsIndice = (int) (Math.log(nsets) / Math.log(2));     // Calcular bits de índice
-        Cache.nBitsTag = (32 - Cache.nBitsOffset - Cache.nBitsIndice); // Calcular bits de tag
+            // Caminho para o arquivo
+            String caminhoArquivo = "./simulador/enderecos/" + arquivoEntrada;
 
-        // Inicializar cache
-        Cache.nSets = nsets;
-        Cache.bSize = bsize;
-        Cache.assoc = assoc;
+            // Inicializa a cache e simula
+            Cache cacheObj = new Cache();
 
-        // Inicializar cache
-        Bloco[][] cache = cacheObj.inicializarCache(nsets, assoc);
+            // Calcula os bits de offset, índice e tag
+            Cache.nBitsOffset = (int) (Math.log(bsize) / Math.log(2)); // Calcular bits de offset
+            Cache.nBitsIndice = (int) (Math.log(nsets) / Math.log(2)); // Calcular bits de índice
+            Cache.nBitsTag = (32 - Cache.nBitsOffset - Cache.nBitsIndice); // Calcular bits de tag
 
-        // Ler endereços do arquivo
-        List<Integer> listaEnderecos = cacheObj.lerEnderecosBinario(caminhoArquivo);
+            // Configura os parâmetros globais da cache
+            Cache.nSets = nsets;
+            Cache.bSize = bsize;
+            Cache.assoc = assoc;
 
-        // Simular cache
-        Cache.simulaCache(cache, assoc, subst, listaEnderecos);
+            // Inicializa a cache
+            Bloco[][] cache = cacheObj.inicializarCache(nsets, assoc);
 
-        // Montar resultado
-        String resultado = cacheObj.montaResultado(flagOut);
-        System.out.println(resultado);
+            // Lê os endereços do arquivo binário
+            List<Integer> listaEnderecos = cacheObj.lerEnderecosBinario(caminhoArquivo);
+
+            // Executa a simulação da cache
+            Cache.simulaCache(cache, assoc, subst, listaEnderecos);
+
+            // Gera e exibe o resultado
+            String resultado = cacheObj.montaResultado(flagOut);
+            System.out.println(resultado);
+
+        } catch (NumberFormatException e) {
+            System.out.println("Erro: Certifique-se de que <nsets>, <bsize>, <assoc> e <flag_saida> são inteiros válidos.");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Erro: " + e.getMessage());
+        } catch (IOException e) {
+            System.out.println("Erro de entrada/saída: " + e.getMessage());
+        }
     }
 }
+
