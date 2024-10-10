@@ -1,5 +1,7 @@
 package simulador.cache;
 
+/*Essa classe representa cada bloco individual da cache e é usada para armazenar informações sobre se o bloco está
+ocupado e qual dado ele contém.*/
 public class Bloco {
     private boolean bitValidade;
     private int tag;

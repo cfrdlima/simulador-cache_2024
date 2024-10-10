@@ -24,20 +24,22 @@ public class Cache {
 
     public Cache() {}
 
+    /*  Ele percorre cada endereço, calcula a tag e o índice, e verifica se o bloco correspondente já está na cache.
+    Se não estiver, ele determina se o miss é compulsório, conflito, ou capacidade, com base no estado atual da cache. */
     public static void simulaCache(Bloco[][] cache, int assoc, String subs, List<Integer> enderecos) {
         Random random = new Random();
         Substituicao politicaSubstituicao = Substituicao.getSubstituicao(subs);
 
         for (int endereco : enderecos) {
             totalAcessos++;
-            
+
             // Calcular tag e índice
             int indice = (endereco >> nBitsOffset) & (cache.length - 1);  // Cálculo do índice
             int tag = endereco >> (nBitsOffset + nBitsIndice);  // Cálculo do tag
-        
+
             boolean hit = false;
             int posicaoLivre = -1;  // Para verificar espaço vazio
-        
+
             // Percorrer os blocos do conjunto
             for (int i = 0; i < assoc; i++) {
                 if (cache[indice][i].isBitValidade() && cache[indice][i].getTag() == tag) {
@@ -50,16 +52,18 @@ public class Cache {
                     posicaoLivre = i;  // Encontrar a primeira posição livre
                 }
             }
-        
+
             if (!hit) {
                 totalMisses++;
                 if (posicaoLivre != -1) {
+                    // Miss compulsório, pois há espaço livre no conjunto
                     cache[indice][posicaoLivre].setBitValidade(true);
                     cache[indice][posicaoLivre].setTag(tag);
                     missCompulsorio++;
                 } else {
+                    // Verifica se o conjunto está cheio
                     if (isFull(cache[indice])) {
-                        missCapacidade++;
+                        missCapacidade++; // O conjunto está cheio, é um miss de capacidade
                         if (politicaSubstituicao == Substituicao.RANDOM) {
                             // Substituição aleatória
                             int posicaoSubstituir = random.nextInt(assoc);
@@ -72,10 +76,9 @@ public class Cache {
                 }
             }
         }
-        
     }
 
-
+    //Este metodo organiza os resultados da simulação e os apresenta de acordo com o formato definido por flag_saida.
     public String montaResultado(int flagSaida) {
         String resultado = "";
 
@@ -112,7 +115,7 @@ public class Cache {
         return resultado;
     }
 
-
+    // Inicializar a cache representando os conjuntos e blocos da cache.
     public Bloco[][] inicializarCache(int nsets, int assoc) {
         Bloco[][] cache = new Bloco[nsets][assoc];
         for (int i = 0; i < nsets; i++) {
@@ -126,12 +129,13 @@ public class Cache {
     private static boolean isFull(Bloco[] conjunto) {
         for (Bloco bloco : conjunto) {
             if (!bloco.isBitValidade()) {
-                return false;
+                return false; // Se encontrar um bloco inválido, o conjunto não está cheio
             }
         }
-        return true;
+        return true; // Se todos os blocos forem válidos, o conjunto está cheio
     }
 
+    //O metodo abre o arquivo binário e converte os bytes lidos em endereços de memória inteiros.
     public List<Integer> lerEnderecosBinario(String caminhoArquivo) throws IOException {
         List<Integer> enderecos = new ArrayList<>();
 
